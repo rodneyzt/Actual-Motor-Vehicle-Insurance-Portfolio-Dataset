@@ -2,7 +2,7 @@
 title: "Actual Motor Vehicle Insurance Portfolio Dataset Report"
 author: "Author: Sunnyboy Ngobeni"
 date: |
-   First published: Tue, 13-Oct-2026
+   First published: Wed, 21-Oct-2026
    ,
    Last updated: `r format(Sys.Date(),'%a, %e-%b-%Y')`
 output: 
@@ -13,7 +13,6 @@ output:
 bibliography: 
   res: book.bib 
   libs: packages.bib
-  git@github.com:rodneyzt/Actual-Motor-Vehicle-Insurance-Portfolio-Dataset.git
 ---
 
 ```{r setup, include=FALSE}
