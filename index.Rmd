@@ -10,6 +10,7 @@ output:
     css: custom.css
     includes: 
       after_body: footer.html
+    toc: true
 bibliography: 
   res: book.bib 
   libs: packages.bib
