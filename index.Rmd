@@ -39,7 +39,7 @@ This project analyses a non-life motor insurance dataset with 105,555 observatio
 #| label: amvi-source-code
 #| include: false
 
-source("amvi_code.R")
+source("amvi-code.R")
 ```
 
 #  {.tabset .tabset-pills}
@@ -127,8 +127,7 @@ Some variables, such as the number and cost of claims, are presented in an aggre
 #| label: summary stats
 #| echo: false
 
-data_wide %>% select(where(is.numeric)) %>% 
-  my_skim %>% mutate(across(where(is.numeric), ~round(.,4))) %>%
+skim_numeric_summary %>%
   my_kable
 ```
 :::
@@ -318,16 +317,91 @@ From here on up until model building, the dataset of interest will be the traini
 <summary>Exploratory Data Analysis (EDA)</summary>
 
 ::: accordion-content
+### Target variables
+
+The target variables are claims count and (average) claim cost.
+
 ```{r}
-#| label: eda
-#| echo: false
+#| label: eda-out1
+#| layout-ncol: 2
 
-train_sev %>% 
-  plot_numerical(., avg_amount, type="both", title= "Distribution of claim severity")
-
+target_plot1
+target_plot2
 ```
 
-The average claim amount is bi-modal.
+-   Left: There were more claims in 2016 than 2017, and in both years the modal claim is 1. The number of policyholders decreases as the claim count increases.
+
+-    Right: There was a significant decline in total claims in 2016 from October to November. There was a sharp increase in claims from November to December in 2015. The number of claims in 2017 remained more or less stable, with no sudden large changes (except feb to march and march to april).
+
+```{r}
+#| label: eda-out2
+#| layout-ncol: 2
+
+target_plot3
+target_plot4
+```
+
+-   Left: (Average) claim amounts are skewed to the right & bi-modal, with many policyholders having claims costs of less than €500. There are few significantly large values (outliers) which is why the density curves flattens out as it goes towards ∞ and why the histogram was capped at €1,500.
+
+-   Adjusting for the €882 spike (by removing it), we get a uni-modal right skewed distribution as seen on the right.
+
+### Other variables
+
+```{r}
+#| label: eda-out3
+#| layout-ncol: 2
+
+cat_plot1
+cat_plot2
+```
+
+-   Left: The boxplots for anonymized, complaint, travel assistance, and negligence are identical for both the rural and urban areas, the only difference is the outliers with rural areas having larger and many outliers. For broken windows and theft, the median for both rural and urban areas is the same.
+
+-   Right: Out of the \~ 37K unique policyholders in the training set, more than 20K uses diesel for their vehicles and the rest uses petrol.
+
+```{r}
+#| label: eda-out4
+#| layout-ncol: 2
+
+cat_plot3
+cat_plot4
+```
+
+-   Left: On average, there are more policyholders from rural areas than those of urban areas. In any given area, most people from prefer making annual payments over bi-annual payments.
+
+-   Right:
+
+    -   Majority of policyholders in rural areas got the insurance policy through an agent, and those in urban areas got it through an insurance broker.
+
+    -   Of the people in rural areas who make annual payments, there is a big gap between those who got their cover from an agent and those who used a broker, the same observation can be made for people from urban areas who make bi-annual payments.
+
+```{r}
+#| label: eda-out5
+#| layout-ncol: 2
+
+cat_plot5
+```
+
+Passenger cars and vans have registered secondary drivers, while motorbikes and agricultural vehicles do not. There are more policies with passenger cars, followed by vans, then motorbikes.
+
+```{r}
+#| label: eda-out6
+#| layout-ncol: 2
+
+target_plot5
+plot1
+```
+
+The distribution of premiums is approximately normal (or slightly skewed to the right), and most policyholders pay less than 500, this is consistent with the (avergae) claim cost which is mostly less than 500.
+
+```{r}
+#| label: eda-out7
+#| layout-ncol: 2
+
+plot3
+```
+
+-   The relationship between vehicle value and power is not linear, and seems to change depending on the type of risk.
 :::
 
 </details>
@@ -345,6 +419,7 @@ The formulas for frequency and severity models before feature selection are as f
 #| label: freq-formula
 #| echo: false
 
+freq_form
 ```
 
 -   severity:

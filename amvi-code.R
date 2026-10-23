@@ -8,8 +8,8 @@ claims <- read_delim("sample type claim.csv",delim = ";", escape_double = FALSE,
   janitor::clean_names()
 
 #'[ ============================================================================================= ] 
-#'[ STRUCTURING DATA(short format): some policies have multiple claims per year, sum & count by...]
-#'[ ID&Claims_type. Since claims data is incomplete, some policies have claims but no claims info ]
+#'[ STRUCTURING DATA(short format): some policies have multiple claims per year, sum & count by...
+#'[ ID&Claims_type. Since claims data is incomplete, some policies have claims but no claims info 
 #'[ ============================================================================================= ]
 
 claims_policy_level <- claims %>%
@@ -53,19 +53,18 @@ my_skim <- skim_with(
                  st.dev = ~ sd(., na.rm = TRUE),
                  skewness = ~ skewness(., na.rm = TRUE, type= 1), #pop/textbook formula
                  distribution = ~ custom_hist(.) #sgr-to_html: converts ANSI codes to HTML span styling strings. pair with esc=F in kable
-  ),
-  # character = sfl( n.val = ~ length(unique(.[!is.na(.)])),
-  #                  mode = ~ names(table(.))[which.max(table(.))],
-  #                  distribution = ~ custom_hist(.)
-  #                 ),
-  append = FALSE)
+  ), append = FALSE)
 
+skim_numeric_summary <- data_wide %>% select(where(is.numeric)) %>% 
+  my_skim %>% mutate(across(where(is.numeric), ~round(.,4))) %>%
+  yank("numeric")
+skim_character_summary <-skim(data_wide) %>% yank("character")
 #'[ ============================================================================================= ] 
-#'[ FEATURE ENGINEERING: Will construct an age and exposure variable                              ]
-#'[ Age= y(current_year 'as at start of year')-y(date_birth) and exposure=DateA-DateB             ]
-#'[ DateA=pmax(start_contract,policy_year_start,last_renewal)                                     ]
-#'[ DateB=pmin(date_lapse,next_renewal,policy_year_end)                                                      ]
-#'[ There are people who got insurance b4 obtaining a drivers licence & others with start date > last renewal]
+#'[ FEATURE ENGINEERING: Will construct an age and exposure variable                              
+#'[ Age= y(current_year 'as at start of year')-y(date_birth) and exposure=DateA-DateB             
+#'[ DateA=pmax(start_contract,policy_year_start,last_renewal)                                     
+#'[ DateB=pmin(date_lapse,next_renewal,policy_year_end)                                                      
+#'[ There are people who got insurance b4 obtaining a drivers licence & others with start date > last renewal
 #'[ ============================================================================================= ]
 
 data_wide <- data_wide %>% mutate(across(starts_with("date_") , dmy))
@@ -103,18 +102,14 @@ data_wide <- data_wide %>%
   ungroup()
 
 #'[ ============================================================================================= ] 
-#'[ DATA CLEANING: Some columns have NA's                                                         ]
-#'[ Date_lapse-replace by date_next_renewal (policies didn't/hasn't lapsed, will renew year end)  ]
-#'[ lapse without lapse data- use date_last renewal or midway through                             ]
-#'[ Type_fuel- by mode, Length by median. mean count for policies with claims is 1.               ]
-#'[ claims_type by None to indicate no claim or anonymized for claims with incomplete info&Count=1]
-#'[ There are cost_claims_year>0 but has no other info, how do i complete this?                   ]
-#'[ There are 80,448 rows where lapses occurred at date_next_renewal & 14,432 at date_last_renewal]
-#'[ 2 separate claims are filed, and 1 has R0, i.e was probably rejected,bcos customer filed a... ]
-#'[ ...a claim that wasn't actually covered by their policy contract(e.g claiming 4 a complaint...]
-#'[ ...under a basic travel assistance policy) hence claim's declined,Claim was below excess...   ]
-#'[ .../deductible hence no payout,Fraud (e.g breach of terms like unlisted driver operating ...  ]
-#'[ ...vehicle at time of incident), etc                                                          ]
+#'[ DATA CLEANING: Some columns have NA's                                                         
+#'[ Date_lapse-replace by date_next_renewal (policies didn't/hasn't lapsed, will renew year end)  
+#'[ claims_type by None to indicate no claim or anonymized for claims with incomplete info&Count>=1  
+#'[ 2 separate claims are filed, and 1 has R0, i.e was probably rejected,bcos customer filed a... 
+#'[ ...a claim that wasn't actually covered by their policy contract(e.g claiming 4 a complaint...
+#'[ ...under a basic travel assistance policy) hence claim's declined,Claim was below excess...   
+#'[ .../deductible hence no payout,Fraud (e.g breach of terms like unlisted driver operating ...  
+#'[ ...vehicle at time of incident), etc                                                          
 #'[ ============================================================================================= ]
 
 #'*check whether all claims have associated claims_type*
@@ -158,10 +153,8 @@ data_wide <- data_wide %>%
   mutate( across(all_of(character_vars) , as_factor) )
 
 #'[ ============================================================================================= ] 
-#'[ DATA SPLITTING: The data is split chronologically, not randomly.                              ]
-#'[ The yrs 2015-2017 will serve as the training/validation set & the yr 2018 as the test set.    ]
-#'[ A policyholder ID may only occur once (either in training, validation, or testing set.)       ]
-#'[ Can I resample valid/train sets?- workflow sets require resamples or tune under fn]
+#'[ DATA SPLITTING: The data is split chronologically, not randomly.                              
+#'[ The yrs 2015-2017 will serve as the training/validation set & the yr 2018 as the test set.    
 #'[ ============================================================================================= ]
 
 data_wide %>% filter(policy_exposure<0) %>% nrow # check policies with zero exposure
@@ -231,41 +224,160 @@ severity_resamples <- train_sev %>%
   sliding_period(index = policy_yr, period = "year", lookback = Inf,assess_stop = 1,complete = TRUE)
 severity_resamples$splits[[1]]$data <- severity_resamples$splits[[1]]$data %>% select(-policy_yr)
 
-###############################################
+#'[ =============================================================================================== ]
+#'[ Exploratory Data Analysis (EDA)                                                                 
+#'[ Firstly, we do target variable EDA to understand their distribution                             
+#'[ we performs univariate EDA (numeric, categorical), bivariate EDA (numerical & categorical)      
+#'[ =============================================================================================== ]
+source("tidy-eda-toolkit.R")
 
-data_wide_sev$avg_amount %>%  # data is bimodal. consider mixed models gamlssMX
-  density %>% 
-  plot(lwd = 3) %>%
-  #lines(x = x_seq, y = y_seq, col = "orange", lwd = 1) %>%
-  abline(v = 800, col="blue",  lty = "dashed", lwd = 2) %>%
-  text(x = 750, y = 0.002, labels = "800", col = "blue") %>% 
-  abline(v = 950, col="red",  lty = "dashed", lwd = 2) %>% 
-  text(x = 1000, y = 0.002, labels = "900", col = "red") 
+#'[ ================================================================================================]
+#'[ Target variables EDA: n_claims_year and avg_amount                                              
+#'[ ================================================================================================]
+target_plot1 <- train_freq %>% 
+  filter(n_claims_year>0 & n_claims_year < 10) %>%
+  plot_categorical(. , n_claims_year, fill_var = policy_year,
+                   title = "Distribution of number of claims from 2015 to 2017",
+                   legend_title = "Policy Year")
 
-source("tidy_eda_toolkit.R")
-sev_target <- train_sev %>%
-  plot_numerical(., x_var = avg_amount, type = "density", color_var = avg_amount)
+target_plot2 <- train_freq %>% 
+  group_by(policy_year, policy_month) %>%
+  summarise(`total claim count` = sum(n_claims_year, na.rm = TRUE),
+            .groups="drop") %>%
+  plot_bivariate(. , policy_month, `total claim count`, color_var = policy_year,
+                 xlab = "policy start month", legend_title = "policy start year",
+                 title = "Total number of claims for each month from 2015 to 2017")+
+  geom_line(aes(x= policy_month, y = `total claim count`, group = policy_year,
+                colour = factor(policy_year)))
+
+target_plot3 <- train_sev %>%  #bimodal
+  filter(avg_amount > 0 & avg_amount <1500) %>%
+  plot_numerical(. , avg_amount, type="both", bins = 35,
+                 title = "Distribution of the average claim amount in € for claims < €1,500",
+                 subtitle = "excluding policies with €0 claim amounts",
+                 ylab = "density", xlab = "average claim amount (€)",scico_palette = "oslo")
+
+target_plot4 <- train_sev %>%  #bimodal
+  filter(avg_amount > 0 & avg_amount <1500, avg_amount!=882) %>%
+  plot_numerical(. , avg_amount, type="both", bins = 35,
+                 title = "Distribution of the average claim amount in € for claims < €1,500",
+                 subtitle = "excluding policies with €0 and €882 claim amounts",
+                 ylab = "density", xlab = "average claim amount (€)",scico_palette = "oslo")
+
+target_plot5 <- train_sev %>% filter(policy_year == 2017, premium <1000) %>%
+  plot_numerical(. , premium, type="both", bins = 50, title = "Distribution of premiums for 2017",
+                 subtitle = "The distribution for past years is similar to that of 2017")
+
+
+#'[ ================================================================================================]
+#'[ univariate EDA: categorical variable                                                            
+#'[ ================================================================================================]
+area_labels <- c('0' = 'rural', '1' = 'urban')
+fuel_labels <- c('P' = 'petrol', 'D' = 'Diesel')
+payment_labels <- c('0' = 'annual', '1' = 'bi-annual')
+distr_channel_labs <- c('0' = 'Agent', '1' = 'Insurance broker')
+risk_labels <- c('1' = 'motorbikes', '2' = 'vans', '3' = 'passenger cars', '4' = 'agricultural vehicles')
+driver_labels <- c('1' = 'yes', '0' = 'no')
+
+cat_plot1 <- train_sev %>%
+  select(area, claims_type,n_claims_year,id) %>% distinct(.) %>%
+  plot_boxplot(. , claims_type, n_claims_year, ylab = 'number of claims year', fill_var = area,
+               fill_labels = area_labels, xlab = "claims type")
+
+cat_plot2 <- train_freq %>% 
+  select(id,type_fuel) %>% distinct %>%
+  filter(!is.na(type_fuel)) %>%
+  plot_categorical(. , type_fuel, fill_var = type_fuel, fill_labels = fuel_labels, legend_title = "Fuel type",
+                   title = "Distribution of fuel types")
+cat_plot3 <- train_sev %>%
+  select(area, payment,id) %>% distinct(.) %>%
+  plot_categorical(., payment, fill_var = area, fill_labels = area_labels, title = "Distribution of policyholders", 
+                   subtitle =  "by geographical area and payment timing")+
+  scale_x_discrete(labels=payment_labels)
+
+cat_plot4 <- train_sev %>%
+  select(area, payment, distribution_channel,id) %>% distinct(.) %>%
+  plot_categorical(.,distribution_channel,fill_var = area,fill_labels = area_labels,
+                   facet_var = payment,facet_labels = payment_labels, 
+                   title = "Count of policyholders by distribution channel for each each payment timing and area")+
+  scale_x_discrete(labels=distr_channel_labs)
+
+cat_plot5 <- train_sev %>%
+  select(second_driver, type_risk,id) %>% distinct(.) %>%
+  plot_categorical(.,type_risk,fill_var = second_driver,fill_labels = driver_labels,
+                   title = "Count of policyholders for each insured risk type",
+                   subtitle = "grouped by whethere a secondary driver exist or not")+
+  scale_x_discrete(labels = risk_labels)
+
+#'[ ================================================================================================]
+#'[ Bivariate EDA: numerical and categorical variables                                              
+#'[ ================================================================================================]
+
+plot1 <- train_sev %>% 
+  plot_boxplot(., claims_type, premium,fill_var = claims_type, xlab = "claims type", ylab = "averge claim amount", scico_palette = "lisbon")
+
+plot2 <- train_sev %>% 
+  plot_boxplot(., claims_type, avg_amount, fill_var = type_risk, fill_labels = risk_labels,
+               xlab = "claims type", ylab = "averge claim amount", scico_palette = "lisbon")
+
+plot3 <- data_wide %>% filter(policy_year != 2018) %>% group_by(id, policy_year) %>% slice(1) %>%
+  plot_bivariate(., power, value_vehicle, color_var = type_risk,
+                 facet_var = type_risk, color_labels = risk_labels,
+                 subtitle = "vehicle power vs vehicle value for each type of risk for the year 2017")
+
+#'[ ================================================================================================]
+#'[ Modelling                                                                                       
+#'[ Use a negative binomial for frequency due to overdispersion                                     
+#'[ portfolio has operational thresholds or flat-rate caps for severity data:                       
+#'[ Classification: Train a Logistic Regression model to predict the prob that a claim will be = 882
+#'[ Severity Regression: Train a standard severity regression model on rows where avg_amount != 882 
+#'[ ================================================================================================]
+
+#'*=================================================================================================*
+#'*   Frequency: */*Negative Binomial*/
+#'*=================================================================================================*
+
+freq_preds <- c('type_risk', 'driver_age', 'licence_duration', 'power', 'value_vehicle', 'cylinder_capacity', 'length', 'weight', 'n_doors', 'policies_in_force', 'area', 'distribution_channel', 'policy_season', 'policy_month', 'policy_tenure', 'policy_year', 'policy_quarter', 'is_new_client', 'past_claims','log_exposure')
+
+freq_recipe <- recipe(freq_preds %>% reformulate("n_claims_year"), data = train_freq) %>%
+  step_nzv(all_predictors()) %>%
+  step_zv(all_predictors()) %>%
+  step_corr( all_numeric_predictors(), threshold = .7) %>% prep
+
+train_freq_baked <- bake(freq_recipe, new_data = NULL)
+final_freq_preds <- setdiff(c(freq_preds[-20], 'offset(log_exposure)'),
+                            setdiff(freq_preds, names(train_freq_baked))) 
+freq_form <-paste0("n_claims_year~",paste(final_freq_preds, collapse = "+")) %>% as.formula()
+library(MASS)
+nb_fit <- glm.nb(freq_form,data = train_freq_baked)
+summary(nb_fit)
+
+# test_set <- data_wide %>% filter(policy_year == "2018") %>%
+#   mutate(policy_exposure = 1,log_exposure=log(policy_exposure)) 
+# test_set <- bake(freq_recipe, new_data = test_set)
+# 
+# #test_set$nb.preds <- predict(nb_fit, newdata = test_set)
+# test_set <- rename_with(test_set,~ paste0("freq", .x, recycle0 = TRUE), starts_with("."))
+library(DHARMa)
+#Dharma
+nb_residuals <- simulateResiduals(nb_fit)
+plot(nb_residuals) # the points sits cleanly on the 45degree line, the overall distr aligns when with the expected uniform distr. The failures of the KS is due to large data points.
+# The dashed black lines are mostly flat and centered around 0.5. (no heavy curves, severe narrowing or widening - which would mean heteroscedasticity or missed non-linear relationships)
+testDispersion(nb_residuals) # none, pvalue>5%
+testZeroInflation(nb_residuals) # none, p-values>5%, and ratio >1. 
+# vedict : while the dharma's zeroinfl test indicated significant zero infl (pvalue=0.008), the zero-inlf ratio was negligible(1.0075), indicating that the model's assumptions were met.
+# model has statistically signif zero-inlf, but the pratical effect is zero. 
+#'*=================================================================================================*
+#'*   Severity: 2-stage */*Binomial GLM and Log-Normal GLM*/
+#'*=================================================================================================*
 
 predictors <- c('claim_type_count', 'value_vehicle', 'cylinder_capacity',
  'weight', 'type_fuel', 'driver_age', 'area', 'premium', 'power', 'n_doors',
  'length', 'past_claims', "claims_type") 
 main_predictors <- setdiff(predictors,setdiff(predictors, names(train_sev)))
-#add_interactions <- paste0(c(main_predictors,non_linear), ' * claims_type')
-non_linear <- "driver_age^2"
 
-formula <- c(main_predictors,non_linear) %>% reformulate(response = 'log(avg_amount)')
-#int_formula <- add_interactions %>% reformulate(response = 'log(avg_amount)') 
+formula <- main_predictors %>% reformulate(response = 'log(avg_amount)')
 
-# interacts <- c("claim_type_count:`claims_typetravel assistance`", "claims_typetheft:cylinder_capacity", "claims_typecomplaint:driver_age", "claims_typecomplaint:premium", "`claims_typetravel assistance`:premium")
-# new_formula <- paste0(c(predictors, interacts),collapse = "+") %>% reformulate(response = "log(avg_amount)")
-#_________________________________________________________
-# Instead of forcing one model to do everything, split the prediction problem into two distinct tasks. This is the industry-standard approach for portfolios with operational thresholds or flat-rate caps.
-#• Stage 1 (Classification): Train a model (e.g., Logistic Regression, Random Forest, or XGBoost) to predict the probability that a claim will be exactly 882 based on the features.
-#• Stage 2 (Severity Regression): Filter your dataset to include only rows where avg_amount != 882. Train a standard severity regression model on this continuous subset using your features.
-#Good distribution choices for Stage 2: A Gamma Generalized Linear Model (GLM) with a log link, or a Log-normal regression model. Both naturally handle the remaining right-skewed distribution.
-#How to make predictions:
-#To predict the expected claim amount for a new observation, combine the outputs of both stages:
-#Y_hat=P(Y=882|X) * 882+[(1-P(Y=882| X)] * E[Y| Y != 882,X]
 metric = metric_set(mae ,rmse)
 cv_results <- function(resample){
    resample %>% mutate(
