@@ -5,7 +5,7 @@
    ========================================================================== */
 /* 1. Increase margins of the html doc to take up 95% of the screen-width*/
 .main-container{
-  max-width: 80% !important;
+  max-width: 95% !important;
   margin-left: auto !important;
   margin-right: auto !important;
 }
@@ -16,9 +16,10 @@
 /* 1. Changes the background color of the content area inside ALL tabs */
 .tab-content {
   background-color: #f7f9fa !important; /* Soft light grey/blue background */
-  padding: 20px;                       /* Gives your text space from the borders */
+  /*padding: 10px;                       /* Gives your text space from the borders */
   border: 1px solid #e1e4e6;           /* Adds a clean border around the content box */
   border-radius: 4px;                  /* Rounds the corners of the box */
+  /*margin-bottom: 10px !important; /* Forces a clear gap before the next element starts */
 }
 
 /* 2. Optional: Style the tab buttons to match the container */
@@ -48,7 +49,7 @@
 }
 
 .tab-pane {
-    padding: 30px !important;
+    padding: 20px 20px !important;
     border-left: 1px solid #dee2e6;
     border-right: 1px solid #dee2e6;
     border-bottom: 1px solid #dee2e6;
@@ -104,6 +105,17 @@
     background-color: #f0f9ff !important; 
 }
 
+/* 4. Fix list margin spillover inside tabs (removes accidental extra gaps) */
+.tab-pane > ul, .tab-pane > ol {
+  margin-bottom: 0px !important;
+  padding-bottom: 0px !important;
+}
+
+/* 5. Separate nested child tab headers from preceding parent text */
+.tab-pane .nav-tabs, .tab-pane .nav-pills {
+  margin-top: 25px !important; /* Adds distinct space where parent content ends and new sub-tabs begin */
+}
+
 /* ==========================================================================
    3. Accordions
    ========================================================================== */
@@ -155,9 +167,6 @@ details[open] summary {
     margin: 0px !important;
     background-color: #ffffff !important; 
 }
-
-
-
 
 
 

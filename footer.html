@@ -5,6 +5,7 @@
   var GITHUB_URL   = "https://github.com/rodneyzt";
   var KAGGLE_URL   = "https://kaggle.com/sunnyboyngobeni";
   var LINKEDIN_URL = "https://linkedin.com/in/sunnyboy-ngobeni";
+  var EMAIL_URL = "mailto:sunnyb.r129@gmail.com";
 </script>
 
 <style type="text/css">
@@ -23,7 +24,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    margin-top: 60px;
+    margin-top: 10px;
     border-top: 1px solid #eeeeee;
     padding-top: 20px;
     padding-bottom: 20px;
@@ -84,13 +85,16 @@
       if (LINKEDIN_URL && LINKEDIN_URL !== "") {
         combinedFooterHtml += '    <a href="' + LINKEDIN_URL + '" target="_blank"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>';
       }
+      if (EMAIL_URL && EMAIL_URL !== "") {
+        combinedFooterHtml += '    <a href="' + EMAIL_URL + '" target="_blank"><i class="fa-brands fa-email"></i> E-Mail</a>';
+      }
       
       combinedFooterHtml += '  </div>';
       
       // Construct metadata right column
       combinedFooterHtml += '  <div id="footer-metadata-right">';
       if (authorText) combinedFooterHtml += '<strong>Author:</strong> ' + authorText + '<br>';
-      if (dateText) combinedFooterHtml += '<strong>Date:</strong> ' + dateText;
+      if (dateText) combinedFooterHtml += '<strong>Date:</strong> <span style="display: inline-block; text-align: left; vertical-align: top;">' + dateText.replace(';','<br>') + '</span>'; //dates occur in separate lines
       combinedFooterHtml += '  </div>';
       
       combinedFooterHtml += '</div>';

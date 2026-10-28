@@ -1,26 +1,27 @@
 ---
 title: "Actual Motor Vehicle Insurance Portfolio Dataset Report"
 author: "Author: Sunnyboy Ngobeni"
-date: |
-   First published: Wed, 21-Oct-2026
-   ,
-   Last updated: `r format(Sys.Date(),'%a, %e-%b-%Y')`
+date: | 
+    First published: Wed, 21-Oct-2026; Last updated: `r format(Sys.Date(),'%a, %e-%b-%Y')`
 output: 
   html_document:
+    pandoc_args: ["--lua-filter","multibib.lua"]
+    #pandoc_args: ["--lua-filter=multibib.lua", "--resource-path=."] # splits the .bib files so they can be printed at specified place
     css: custom.css
     includes: 
       after_body: footer.html
     toc: true
-bibliography: 
-  res: book.bib 
+bibliography:
+  res: book.bib
   libs: packages.bib
+nocite: '@*'
+citeproc: false
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 
 library(kableExtra)
-
 # knitr helper function:: defines kable settings
 my_kable <- function(df,...){
   df %>%
@@ -41,6 +42,14 @@ This project analyses a non-life motor insurance dataset with 105,555 observatio
 #| include: false
 
 source("amvi-code.R")
+
+# automatically create a bib database for R packages
+# first line excludes tidyverse and tidymodels from being cited as their individual packages
+
+knitr::write_bib(c(
+  setdiff(setdiff(.packages(),tidyverse::tidyverse_packages()),tidymodels::tidymodels_packages()),
+  'tidyverse','tidymodels', 'knitr'
+), 'packages.bib')
 ```
 
 #  {.tabset .tabset-pills}
@@ -49,7 +58,7 @@ source("amvi-code.R")
 
 <details name="summary">
 
-<summary>**Introduction**</summary>
+<summary>Introduction</summary>
 
 ::: accordion-content
 Insurance companies often rely on data-driven approaches to derive valuable insights that drive informed decision-making, and to estimate premiums, taking into account factors such as ***demographic info*** (e.g age, gender, occupation, etc), ***policy-related info*** (e.g insurance duration, premium amounts, type of cover/policy, etc), ***risk-related info*** (e.g vehicle value, power, mileage, etc), and **previous claim history**, amongst others where applicable/necessary/possible.
@@ -59,7 +68,7 @@ Insurance companies often rely on data-driven approaches to derive valuable insi
 
 <details name="summary">
 
-<summary>**Objectives**</summary>
+<summary>Objectives</summary>
 
 ::: accordion-content
 The goals of this project is:
@@ -73,7 +82,7 @@ The goals of this project is:
 
 <details name="summary">
 
-<summary>**Methods**</summary>
+<summary>Methods</summary>
 
 ::: accordion-content
 For the purpose of the premium calculations, a Log-normal GLM is fitted to estimate severity model, and a negative binomial for frequency.
@@ -89,7 +98,7 @@ The severity model is evaluated using RMSE (and MAE) compared against the baseli
 
 <details name="summary">
 
-<summary>**Results**</summary>
+<summary>Results</summary>
 
 ::: accordion-content
 The chosen GLM performed better than the mean baseline.
@@ -97,11 +106,9 @@ The chosen GLM performed better than the mean baseline.
 
 </details>
 
-## Data
+## Data Wrangling & Splitting
 
-### Data Import
-
-The "Actual Motor Vehicle Insurance Portfolio Dataset" is accessible at Mendeley Data through this link <https://doi.org/10.17632/5cxyb5fp4f.2>.
+The "Actual Motor Vehicle Insurance Portfolio Dataset" is accessible at Mendeley Data through this link <https://doi.org/10.17632/5cxyb5fp4f.2>, [@AMVI-data2024].
 
 <details name="data">
 
@@ -124,6 +131,8 @@ Some variables, such as the number and cost of claims, are presented in an aggre
 <summary>Features and summary statistics</summary>
 
 ::: accordion-content
+Uses skimr package, [@R-skimr].
+
 ```{r}
 #| label: summary stats
 #| echo: false
@@ -135,9 +144,7 @@ skim_numeric_summary %>%
 
 </details>
 
-## Data Wrangling & Splitting
-
-<details name="data_wrangling">
+<details name="data">
 
 <summary>Data Cleaning & Pre-Processing</summary>
 
@@ -155,7 +162,7 @@ As part of the pre-processing process, we'll adjust date variables from characte
 
 </details>
 
-<details name="data_wrangling">
+<details name="data">
 
 <summary>Feature Engineering</summary>
 
@@ -273,7 +280,7 @@ Since `policy_month`, `policy_quarter`, and `policy_season` are derived from the
 
 </details>
 
-<details name="data_wrangling">
+<details name="data">
 
 <summary>Data splitting</summary>
 
@@ -332,7 +339,7 @@ target_plot2
 
 -   Left: There were more claims in 2016 than 2017, and in both years the modal claim is 1. The number of policyholders decreases as the claim count increases.
 
--    Right: There was a significant decline in total claims in 2016 from October to November. There was a sharp increase in claims from November to December in 2015. The number of claims in 2017 remained more or less stable, with no sudden large changes (except feb to march and march to april).
+-   Right: There was a significant decline in total claims in 2016 from October to November. There was a sharp increase in claims from November to December in 2015. The number of claims in 2017 remained more or less stable, with no sudden large changes (except feb to march and march to april).
 
 ```{r}
 #| label: eda-out2
@@ -452,7 +459,7 @@ We do feature selection using a statistical approach:
     -   How to make predictions: To predict the expected claim amount for a new observation, combine the outputs of both stages:
 
         $$
-        \hat{Y} = P( Y=882 | X) * 882 + [(1-P(Y==882|X)]*E[Y|Y\neq882,X]
+        \hat{Y} = P( Y=882 | X) * 882 + [(1-P(Y=882|X)]*E[Y|Y\neq882,X]
         $$
 
 ### Cross-Validation Evaluation
@@ -773,12 +780,12 @@ From a pure premium, the premium to charge a policyholder can be calculated by a
 
 #### References {.unnumbered}
 
-::: {#refs-res}
+::: {#refs_res}
 :::
 
 #### R Packages {.unnumbered}
 
-::: {#refs-libs}
+::: {#refs_libs}
 :::
 :::::
 
