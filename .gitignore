@@ -3,5 +3,9 @@
 .RData
 .Ruserdata
 tidy-eda-toolkit.R
-index_cache/
-index_files/
+*.Rmd
+*.csv
+*.css
+*.Rproj
+*.bib
+multibib.lua
