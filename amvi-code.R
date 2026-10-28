@@ -350,7 +350,7 @@ final_freq_preds <- setdiff(c(freq_preds[-20], 'offset(log_exposure)'),
 freq_form <-paste0("n_claims_year~",paste(final_freq_preds, collapse = "+")) %>% as.formula()
 library(MASS)
 nb_fit <- glm.nb(freq_form,data = train_freq_baked)
-summary(nb_fit)
+nb_summary <- tidy(nb_fit)
 
 # test_set <- data_wide %>% filter(policy_year == "2018") %>%
 #   mutate(policy_exposure = 1,log_exposure=log(policy_exposure)) 
