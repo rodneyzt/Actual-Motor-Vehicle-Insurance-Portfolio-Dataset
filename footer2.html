@@ -1,0 +1,133 @@
+<script type="text/javascript">
+  /* =========================================================================
+     CONFIGURATION BLOCK: Edit your profile links right here at the top!
+     ========================================================================= */
+  var GITHUB_URL   = "https://github.com/rodneyzt";
+  var KAGGLE_URL   = "https://kaggle.com/sunnyboyngobeni";
+  var LINKEDIN_URL = "https://linkedin.com/in/sunnyboy-ngobeni";
+  var EMAIL_URL = "mailto:sunnyb.r129@gmail.com";
+</script>
+
+<style type="text/css">
+/* Force FontAwesome CDN style processing inside the body wrapper */
+  @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css");
+  /* Hide the default author and date layout at the top of the page */
+/* Hide the original author/date metadata and any leftover markers */
+.main-container .author,
+.main-container .date,
+.fluid-row .author,
+.fluid-row .date {
+  display: none !important;
+}
+
+/* Remove bullets or markers left by metadata list containers */
+.main-container ul:has(.author),
+.main-container ul:has(.date),
+.main-container ol:has(.author),
+.main-container ol:has(.date) {
+  list-style: none !important;
+  padding-left: 0 !important;
+  margin: 0 !important;
+}
+
+/* Hide empty metadata containers that may remain below the title */
+.main-container li:empty,
+.main-container p:empty,
+.main-container h4:empty {
+  display: none !important;
+}
+
+/* Diagnostic fix: suppress decorative markers around the title metadata */
+.main-container .author::before,
+.main-container .date::before,
+.main-container .author::after,
+.main-container .date::after {
+  content: none !important;
+  display: none !important;
+}
+
+  /* Structural side-by-side flexbox alignment container */
+  #custom-footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 10px;
+    border-top: 1px solid #eeeeee;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    clear: both;
+    width: 100%;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  /* Left-side social links styling */
+  #footer-links-left {
+    text-align: left;
+  }
+  #footer-links-left a {
+    margin-right: 15px;
+    color: #337ab7;
+    text-decoration: none;
+    font-size: 0.95em;
+  }
+  #footer-links-left a:hover {
+    text-decoration: underline;
+  }
+  #footer-links-left i {
+    margin-right: 5px;
+  }
+
+  /* Right-side metadata typography */
+  #footer-metadata-right {
+    text-align: right;
+    color: #555555;
+    font-size: 0.9em;
+    line-height: 1.4;
+  }
+</style>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    // Small timeout ensures the internal R Markdown template scripts execute first
+    setTimeout(function() {
+      // Pull metadata fields out from the document template hidden components
+      var authorText = $('.fluid-row .author, h4.author, p.author, .author').first().text();
+      var dateText = $('.fluid-row .date, h4.date, p.date, .date').first().text();
+      
+      // Strip away prefix wording if pre-baked by RStudio compilation
+      authorText = authorText.replace(/^[Aa]uthor:\s*/, '').trim();
+      dateText = dateText.replace(/^[Dd]ate:\s*/, '').trim();
+      
+      // Initialize dynamic footer build layout
+      var combinedFooterHtml = '<div id="custom-footer-container">';
+      combinedFooterHtml += '  <div id="footer-links-left">';
+      
+      // Construct links conditionally based on whether values were supplied at the top config
+      if (GITHUB_URL && GITHUB_URL !== "") {
+        combinedFooterHtml += '    <a href="' + GITHUB_URL + '" target="_blank"><i class="fa-brands fa-github"></i> GitHub</a>';
+      }
+      if (KAGGLE_URL && KAGGLE_URL !== "") {
+        combinedFooterHtml += '    <a href="' + KAGGLE_URL + '" target="_blank"><i class="fa-brands fa-kaggle"></i> Kaggle</a>';
+      }
+      if (LINKEDIN_URL && LINKEDIN_URL !== "") {
+        combinedFooterHtml += '    <a href="' + LINKEDIN_URL + '" target="_blank"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>';
+      }
+      if (EMAIL_URL && EMAIL_URL !== "") {
+        combinedFooterHtml += '    <a href="' + EMAIL_URL + '" target="_blank"><i class="fa-brands fa-email"></i> E-Mail</a>';
+      }
+      
+      combinedFooterHtml += '  </div>';
+      
+      // Construct metadata right column
+      combinedFooterHtml += '  <div id="footer-metadata-right">';
+      if (authorText) combinedFooterHtml += '<strong>Author:</strong> ' + authorText + '<br>';
+      if (dateText) combinedFooterHtml += '<strong>Date:</strong> <span style="display: inline-block; text-align: left; vertical-align: top;">' + dateText.replace(';','<br>') + '</span>'; //dates occur in separate lines
+      combinedFooterHtml += '  </div>';
+      
+      combinedFooterHtml += '</div>';
+      
+      // Dynamically mount constructed layout elements onto the web layout wrapper container
+      $('.main-container').append(combinedFooterHtml);
+    }, 150);
+  });
+</script>
