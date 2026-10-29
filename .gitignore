@@ -10,3 +10,4 @@ tidy-eda-toolkit.R
 *.bib
 multibib.lua
 footer.html 
+.gitignore
