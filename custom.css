@@ -1,0 +1,172 @@
+/* style.css */
+
+/* ==========================================================================
+   1. report width size
+   ========================================================================== */
+/* 1. Increase margins of the html doc to take up 95% of the screen-width*/
+.main-container{
+  max-width: 95% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* ==========================================================================
+   1. Tabsets config
+   ========================================================================== */
+/* 1. Changes the background color of the content area inside ALL tabs */
+.tab-content {
+  background-color: #f7f9fa !important; /* Soft light grey/blue background */
+  /*padding: 10px;                       /* Gives your text space from the borders */
+  border: 1px solid #e1e4e6;           /* Adds a clean border around the content box */
+  border-radius: 4px;                  /* Rounds the corners of the box */
+  /*margin-bottom: 10px !important; /* Forces a clear gap before the next element starts */
+}
+
+/* 2. Optional: Style the tab buttons to match the container */
+.nav-pills > li > a {
+  background-color: #e1e4e6 !important;
+  color: #333333 !important;
+  margin-right: 5px;
+}
+
+/* 3. HIGHLIGHTED (ACTIVE) TAB: Crisp White Container, Deep Blue Text */
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:hover,
+.nav-pills > li.active > a:focus {
+  background-color: #ffffff !important; 
+  color: #0056b3 !important; /* Polished deep blue text */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); /* Lifts the active tab button */
+  border: 1px solid #e1e4e6;
+}
+/* Hovering over inactive tabs */
+.nav-pills > li > a:hover {
+  background-color: #e9ecef !important;
+}
+
+/*  1. GLOBAL LAYOUT & PANEL CONFIGURATION */
+*, *:before, *:after {
+    box-sizing: border-box !important;
+}
+
+.tab-pane {
+    padding: 20px 20px !important;
+    border-left: 1px solid #dee2e6;
+    border-right: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+.nav-tabs > li > a {
+    background-color: #f8f9fa !important;
+    color: #495057 !important;
+    border: 1px solid #dee2e6 !important;
+    border-bottom-color: transparent !important;
+    padding: 12px 20px !important;
+}
+
+.nav-tabs > li > a:hover {
+    background-color: #e9ecef !important;
+    color: #212529 !important;
+}
+
+/* 2. CUSTOM COLORS FOR TABS AND PANELS ONLY - defined only for 3 tabs,
+   increaes tabs as necessary by copying and pasting th code below */
+/* --- TAB 1: YELLOW with white background --- */
+.nav-tabs > li:nth-child(1).active > a, 
+.nav-tabs > li:nth-child(1).active > a:hover {
+    background-color: #ffd166 !important; 
+    color: #212529 !important;
+    border: 1px solid #ffd166 !important;
+}
+#tab-1 {
+    background-color: #fffbeb !important; 
+}
+
+/* --- TAB 2: GREEN with white background--- */
+.nav-tabs > li:nth-child(2).active > a, 
+.nav-tabs > li:nth-child(2).active > a:hover {
+    background-color: #06d6a0 !important; 
+    color: #ffffff !important;
+    border: 1px solid #06d6a0 !important;
+}
+#tab-2 {
+    background-color: #f0fdf4 !important; 
+}
+
+/* --- TAB 3: BLUE with white background--- */
+.nav-tabs > li:nth-child(3).active > a, 
+.nav-tabs > li:nth-child(3).active > a:hover {
+    background-color: #118ab2 !important; 
+    color: #ffffff !important;
+    border: 1px solid #118ab2 !important;
+}
+#tab-3 {
+    background-color: #f0f9ff !important; 
+}
+
+/* 4. Fix list margin spillover inside tabs (removes accidental extra gaps) */
+.tab-pane > ul, .tab-pane > ol {
+  margin-bottom: 0px !important;
+  padding-bottom: 0px !important;
+}
+
+/* 5. Separate nested child tab headers from preceding parent text */
+.tab-pane .nav-tabs, .tab-pane .nav-pills {
+  margin-top: 25px !important; /* Adds distinct space where parent content ends and new sub-tabs begin */
+}
+
+/* ==========================================================================
+   3. Accordions
+   ========================================================================== */
+   
+/* make expanding accordions have thick boxes with compact spacing*/
+
+details {
+    display: block !important;
+    width: 100% !important;
+    background-color: #ffffff !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 8px !important;
+    /* --- CRITICAL SPACING FIX --- */
+    margin-top: 0px !important;
+    margin-bottom: 4px !important; /* Pulls the boxes tightly together, removing large gaps */
+    padding: 0px !important;
+    overflow: hidden !important;
+}
+
+/* Thick clickable title bar */
+summary {
+    display: list-item !important; 
+    width: 100% !important;
+    background-color: #f8f9fa !important;            
+    color: #212529 !important;                       
+    padding: 22px 26px !important; /* Keeps headers tall and prominent */
+    margin: 0px !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
+    font-size: 1.25em !important; 
+    outline: none !important;
+    border-bottom: 1px solid transparent !important;
+}
+
+summary:hover {
+    background-color: #e9ecef !important;
+}
+
+details[open] summary {
+    border-bottom: 1px solid #dee2e6 !important;
+    background-color: #f1f3f5 !important;
+}
+
+/* Expanded interior content region */
+.accordion-content {
+    display: block !important;
+    width: 100% !important;
+    padding: 30px 35px !important; /* Thick interior spacing */
+    margin: 0px !important;
+    background-color: #ffffff !important; 
+}
+
+
+
