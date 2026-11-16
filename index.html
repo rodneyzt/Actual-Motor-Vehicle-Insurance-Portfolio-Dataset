@@ -191,7 +191,7 @@ pre code {
 Dataset Report</h1>
 <h4 class="author">Author: Sunnyboy Ngobeni</h4>
 <h4 class="date"><p>First published: Wed, 21-Oct-2026; Last updated:
-Sun, 8-Nov-2026</p></h4>
+Mon, 16-Nov-2026</p></h4>
 
 </div>
 
@@ -2667,10 +2667,7 @@ has)</p></li>
 heavy curves, severe narrowing or widening).</li>
 </ul></li>
 </ul>
-<pre><code>## plotResiduals() for datasets larger than 10,000 displays a spline instead of quantile regression lines for the sake of speed. To switch back to quantile regression lines, use the argument quantreg = T and have in mind that the function may take a while to compute and display the lines.</code></pre>
-<p><img src="index_files/figure-html/cost-dharma-2-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>There is a sign of homogeneity in the claims type variable for
-annonymized and travel assistance.</p>
+<!-- There is a sign of homogeneity in the claims type variable for annonymized and travel assistance. -->
 <p>As can be seen in the table below, most of the predictors are
 significant (at a 5% level of significance) since they have a p-value or
 0.05 or less. The intercept is significant in this model. The standard
@@ -3132,10 +3129,10 @@ mae
 standard
 </td>
 <td style="text-align:right;">
-147.2403
+145.8759
 </td>
 <td style="text-align:right;">
-698.4448
+578.2928
 </td>
 </tr>
 <tr>
@@ -3146,10 +3143,10 @@ rmse
 standard
 </td>
 <td style="text-align:right;">
-720.4117
+707.6999
 </td>
 <td style="text-align:right;">
-851.9660
+752.5180
 </td>
 </tr>
 </tbody>
@@ -3189,7 +3186,7 @@ the model’s structural features still successfully manage to anchor and
 improve predictions over a simple mean baseline.</li>
 </ul></li>
 </ul>
-<p>The portfolio has a gini index of 0.323</p>
+<p>The portfolio has a gini index of 0.319</p>
 </div>
 <div id="conclusion-future-scope" class="section level2">
 <h2>Conclusion &amp; Future scope</h2>
@@ -3207,16 +3204,16 @@ appropriate distribution for modelling the claim severity provided that
 the 882 hurdle is dealt with.</p>
 <p>Further consideration to increase the reliability of the results:</p>
 <ul>
-<li><p>increasing the size of the data, the final fit had better fit
-probably because the training data was larger than during
-cross-validation.</p></li>
+<li><p>increasing the size of the data, the slice 2 of Cv and the final
+fit had better fit probably because the training data was larger than
+during slice 1 cross-validation.</p></li>
 <li><p>Other considerations is that the data had too many claims data
 missing, most of the claims data had to be treated as anonymized instead
 of using their actual categories as this information was not
 available.</p></li>
 </ul>
-<p>But regardless of the missing information, all models performed well,
-and each one of them can be used to estimate pure premiums.</p>
+<p>But regardless of the missing information, the model performed better
+than the baseline, and can be used to estimate pure premiums.</p>
 </div>
 </details>
 <details name="conclusion">
@@ -3224,6 +3221,11 @@ and each one of them can be used to estimate pure premiums.</p>
 Future Scope
 </summary>
 <div class="accordion-content">
+<p>The predictors that both models (severity and frequency) used were
+linear with respect to one another, to further improve the
+predictability of the models, we can add non-linear terms to the models.
+Using splines and interactions could also be explored. The claims type
+variable can also have some levels collapsed as they are rare.</p>
 <p>From a pure premium, the premium to charge a policyholder can be
 calculated by adding loadings like expense loading (admin, policy setup,
 etc), profit loading, etc to the risk/pure premium.</p>
