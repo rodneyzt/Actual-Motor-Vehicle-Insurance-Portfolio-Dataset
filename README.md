@@ -5,7 +5,9 @@ This project/repositry performs a comprehensive data analysis and machine learni
 ### Dataset Overview
 
 **Type** : Anonymised microdata from a Spanish non-life motor vehicle insurance portfolio.
+
 **Volume** : 105,555 rows and 30 variables.
+
 **Timeline** : over three full years (November 2015 to December 2018).
 
 ### Project Goals
