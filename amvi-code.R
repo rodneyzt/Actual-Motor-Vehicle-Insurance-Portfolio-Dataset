@@ -19,8 +19,8 @@ claims <- read_delim("sample type claim.csv",delim = ";", escape_double = FALSE,
 claims_policy_level <- claims %>%
   group_by(id , cost_claims_year) %>%
   summarise(claim_count = n(),
-            .groups = 'drop'
-  ) #claim_count == n_claims_year
+            .groups = "drop"
+  ) #claim_count == n_claims_year 
 claims_claim_level <- claims %>%
   group_by(id , claims_type , cost_claims_year) %>%
   summarise(claim_type_count = n(), 
@@ -549,15 +549,15 @@ test_df <- test_df %>% mutate(pred_sev = (prob_pred * 882) + (1 - prob_pred)*pre
                         pure_premium = pred_sev * pred_negbin)
 
 # Define a baseline: Average total loss per policy in the training set
-test_df$baseline_pure_premium <- mean(final_model_train_df$cost_claims_year, na.rm = TRUE)
+test_df$baseline_pure_premium <- mean(final_model_train_df$amount, na.rm = TRUE)
 
 # 1. Calculate Portfolio MAE and RMSE
 pure_premium_metrics <- bind_cols(
   test_df %>% 
-    get_metrics(truth = cost_claims_year, estimate = pure_premium) %>% 
+    get_metrics(truth = amount, estimate = pure_premium) %>% 
     rename('model.estimate' = .estimate),
   test_df %>% 
-    get_metrics(truth = cost_claims_year, estimate = baseline_pure_premium) %>%
+    get_metrics(truth = amount, estimate = baseline_pure_premium) %>%
     select('baseline.estimate' = .estimate)
 )
 
@@ -566,7 +566,7 @@ portfolio_lorenz_data <- test_df %>%
   arrange(pure_premium) %>%
   mutate(
     cum_prop_policies = row_number() / n(),
-    cum_losses        = cumsum(cost_claims_year) / sum(cost_claims_year)
+    cum_losses        = cumsum(amount) / sum(amount)
   )
 
 # Plotting the combined performance
@@ -582,5 +582,5 @@ l1 <- ggplot(portfolio_lorenz_data, aes(x = cum_prop_policies, y = cum_losses)) 
 
 # Calculate the overall Portfolio Gini Coefficient
 portfolio_gini <- test_df %>% 
-  gini_coef(truth = cost_claims_year, estimate = pure_premium) %>% mutate(.estimate = round(.estimate,3))
+  gini_coef(truth = amount, estimate = pure_premium) %>% mutate(.estimate = round(.estimate,3))
 
